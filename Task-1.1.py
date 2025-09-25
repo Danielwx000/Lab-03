@@ -2,21 +2,20 @@
 import re 
 ips = []
 counter = 0
-LOGFILE = "sample_auth_small.log"  # change filename if needed
+LOGFILE = "sample_auth_small.log"
 
 def ip_parser(line):
    
     if " from " in line:
-        parts = line.split() # splits the line into tokens, seperates by spaces by default
+        parts = line.split()
         try:
-            anchor = parts.index("from")    # Find the position of the token "port", our anchor
-            ip = parts[anchor+1]          # the port value will be next token, anchor+1
-            return ip.strip()             # strip any trailing punctuation
+            anchor = parts.index("from")
+            ip = parts[anchor+1]
+            return ip.strip()
             
         except (ValueError, IndexError):
             return None
 
-    return None
 with open('sample_auth_small.log', 'r') as f:
     for line in f:
         ip_pattern = r"\d+\.\d+\.\d+\.\d+"
@@ -31,8 +30,3 @@ for ip in unique_ips:
     print(ip)
 
 print("The ammount of unique ip's is", counter)
-
-
-## This is the main block that will run first. 
-## It will call any functions from above that we might need.
-
