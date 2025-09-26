@@ -1,7 +1,7 @@
 from collections import defaultdict
 import time
 
-def top_n(counts, n=5):
+def top_n(counts, n):
     return sorted(counts.items(), key=lambda kv: kv[1], reverse=True)[:n]
 
 def ip_parse(line):
@@ -28,10 +28,18 @@ with open("sample_auth_small.log") as f:
             if ip:
                 instances[ip] += 1
 
-final_list = top_n(instances)
+final_list = top_n(instances, len(instances))
+print("Top 5 attacker's IP")
 for i in final_list:
     print(i[0], i[1])
 
 end = time.time()
+
+print("Wrote to failed_counts.txt")
 print("Elapsed:", end-start, "seconds")
+
+with open('failed_counts.txt', 'w') as b:
+    b.write("Failed Password Attempts:\n")
+    for i in final_list:
+        b.write(str(i[0]) + str(i[1]) + "\n")
 
