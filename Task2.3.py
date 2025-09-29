@@ -44,5 +44,46 @@ if __name__ == "__main__":
             if ts and ip and event == "failed":   # checks that ts and ip are not null, and that event=="failed"
                 per_ip_timestamps[ip].append(ts)
     # quick print
-    for ip, times in per_ip_timestamps.items():
-        print(ip, len(times))
+    #for ip, times in per_ip_timestamps.items():
+        #print(ip, len(times))
+
+
+from datetime import timedelta
+
+incidents = []
+window = timedelta(minutes=10)
+for ip, times in per_ip_timestamps.items():
+    times.sort()
+    n = len(times)
+    i = 0
+    while i < n:
+        j = i
+        while j + 1 < n and (times[j+1] - times[i]) <= window:
+            j += 1
+        count = j - i + 1
+        if count >= 5:
+            incidents.append({
+                "ip": ip,
+                "count": count,
+                "first": times[i].isoformat(),
+                "last": times[j].isoformat()
+            })
+            # advance i past this cluster to avoid duplicate overlapping reports:
+            i = j + 1
+        else:
+            i += 1
+print("Detected 5 brute-force incidents\n", incidents[:5])
+
+
+import matplotlib.pyplot as plt
+# sample data - not taken from logfile 
+ips = ['203.0.113.45','203.0.113.46','198.51.100.99']
+counts = [45, 32, 20]
+plt.figure(figsize=(8,4))
+plt.bar(ips, counts)
+plt.title("Top attacker IPs")
+plt.xlabel("IP")
+plt.ylabel("Failed attempts")
+plt.tight_layout()
+plt.savefig("top_attackers.png")
+plt.show()
